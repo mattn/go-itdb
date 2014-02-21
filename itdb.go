@@ -157,10 +157,14 @@ func (i *IPod) CopyTrack(fn string) error {
 		return glib.ErrorFromNative(unsafe.Pointer(gerror))
 	}
 
+	return nil
+}
+
+func (i *IPod) Write() error {
+	var gerror *C.GError
 	C.itdb_write(i.db, &gerror)
 	if gerror != nil {
 		return glib.ErrorFromNative(unsafe.Pointer(gerror))
 	}
-
 	return nil
 }

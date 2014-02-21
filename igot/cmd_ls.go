@@ -26,7 +26,7 @@ func make_cmd_ls(iPod *itdb.IPod) *commander.Command {
 
 			fmt.Print(" ")
 
-			ct.ChangeColor(ct.Blue, true, ct.None, false)
+			ct.ChangeColor(ct.Cyan, true, ct.None, false)
 			fmt.Println(t.Artist)
 			ct.ResetColor()
 		}
