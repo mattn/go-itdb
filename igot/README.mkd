@@ -1,0 +1,49 @@
+igot
+====
+
+iPod Commander
+
+Usage:
+------
+
+* Set mount point
+
+    export IPOD_MOUNT_DIR=/mnt/ipod
+
+
+* list tracks
+
+    igod ls
+
+* add mp3 into iPod
+
+    ipod cp /path/to/your/favorite/song.mp3
+
+* remove track from iPod
+
+    ipod rm [id]
+
+Warning:
+--------
+
+This is very experimental software. So you please note to use.
+
+Requirements:
+-------------
+
+* libgpod
+
+Install:
+--------
+
+    go install github.com/mattn/go-itdb/igot
+
+License:
+--------
+
+go-itdb's
+
+Author:
+-------
+
+Yasuhiro Matsumoto (a.k.a mattn)
