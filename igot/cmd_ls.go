@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"github.com/gonuts/commander"
 	"github.com/mattn/go-itdb"
-	"log"
 )
 
 func make_cmd_ls(iPod *itdb.IPod) *commander.Command {
 	cmd_ls := func(cmd *commander.Command, args []string) error {
 		tracks, err := iPod.Tracks()
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		for _, t := range tracks {
 			fmt.Println(t.Title, t.Artist)
