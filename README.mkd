@@ -1,0 +1,24 @@
+go-itdb
+=======
+
+Binding for iTunes Database
+
+Requirements:
+-------------
+
+* libgpod
+
+Install:
+--------
+
+    go get github.com/mattn/go-itdb
+
+License:
+--------
+
+  The library is available under the same terms and conditions as the Go, the BSD style license, and the LGPL (Lesser GNU Public License). The idea is that if you can use Go (and libgpod) in a project, you should also be able to use go-itdb.
+
+Author:
+-------
+
+  Yasuhiro Matsumoto (a.k.a mattn)
