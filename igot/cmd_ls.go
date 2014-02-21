@@ -13,7 +13,7 @@ func make_cmd_ls(iPod *itdb.IPod) *commander.Command {
 			return err
 		}
 		for _, t := range tracks {
-			fmt.Println(t.Title, t.Artist)
+			fmt.Println(t.Id, t.Title, t.Artist)
 		}
 		return nil
 	}

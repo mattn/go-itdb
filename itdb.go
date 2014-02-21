@@ -13,8 +13,8 @@ static inline void freeCstr(char* s) { free(s); }
 import "C"
 import (
 	"errors"
-	"github.com/mikkyang/id3-go"
 	"github.com/mattn/go-gtk/glib"
+	"github.com/mikkyang/id3-go"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -49,6 +49,7 @@ func New(mp string) (*IPod, error) {
 }
 
 type Track struct {
+	Id         int
 	Title      string
 	Album      string
 	Artist     string
@@ -64,6 +65,7 @@ func (i *IPod) Tracks() (ret []Track, err error) {
 	for e := i.db.tracks; e != nil; e = e.next {
 		t := (*C.Itdb_Track)(e.data)
 		ret = append(ret, Track{
+			Id:         int(t.id),
 			Title:      gostring(t.title),
 			Album:      gostring(t.album),
 			Artist:     gostring(t.artist),
@@ -88,6 +90,17 @@ func (i *IPod) DBPath() (string, error) {
 	return gostring(ret), nil
 }
 
+func (i *IPod) RemoveTrack(id int) error {
+	t := C.itdb_track_by_id(i.db, C.guint32(id))
+	if t != nil {
+		return errors.New("Unknown track ID")
+	}
+
+	C.itdb_playlist_remove_track(nil, t)
+	C.itdb_track_remove(t)
+	return nil
+}
+
 func (i *IPod) CopyTrack(fn string) error {
 	f, err := id3.Open(fn)
 	if err != nil {
@@ -102,39 +115,39 @@ func (i *IPod) CopyTrack(fn string) error {
 	t.userdata_duplicate = C.ItdbUserDataDuplicateFunc(C.g_strdup)
 	t.userdata_destroy = C.ItdbUserDataDestroyFunc(C.g_free)
 
-    t.transferred = 0
-    C.itdb_track_add(i.db, t, -1)
+	t.transferred = 0
+	C.itdb_track_add(i.db, t, -1)
 
 	title := C.CString(f.Title())
 	defer cfree(title)
-    t.title = C.toGstr(title)
+	t.title = C.toGstr(title)
 
 	album := C.CString(f.Album())
 	defer cfree(album)
-    t.album = C.toGstr(album)
+	t.album = C.toGstr(album)
 
 	artist := C.CString(f.Artist())
 	defer cfree(artist)
-    t.artist = C.toGstr(artist)
+	t.artist = C.toGstr(artist)
 
 	genre := C.CString(f.Genre())
 	defer cfree(genre)
-    t.genre = C.toGstr(genre)
+	t.genre = C.toGstr(genre)
 
 	comment := C.CString(strings.Join(f.Comments(), "\n"))
 	defer cfree(comment)
-    t.comment = C.toGstr(comment)
+	t.comment = C.toGstr(comment)
 
-    t.track_nr = C.gint32(f.Padding())
+	t.track_nr = C.gint32(f.Padding())
 
 	year, err := strconv.Atoi(f.Year())
 	if err != nil {
 		return err
 	}
-    t.year = C.gint32(year)
+	t.year = C.gint32(year)
 
-    t.tracklen = C.gint32(f.Size())
-    t.samplerate = 0
+	t.tracklen = C.gint32(f.Size())
+	t.samplerate = 0
 
 	t.itdb = i.db
 
@@ -151,4 +164,3 @@ func (i *IPod) CopyTrack(fn string) error {
 
 	return nil
 }
-
