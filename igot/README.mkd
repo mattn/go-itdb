@@ -8,20 +8,20 @@ Usage:
 
 * Set mount point
 
-    export IPOD_MOUNT_DIR=/mnt/ipod
+        $ export IPOD_MOUNT_DIR=/mnt/ipod
 
 
-* list tracks
+* List tracks on iPod
 
-    igod ls
+        $ igod ls
 
-* add mp3 into iPod
+* Add mp3 file into iPod
 
-    ipod cp /path/to/your/favorite/song.mp3
+        $ ipod cp /path/to/your/favorite/song.mp3
 
-* remove track from iPod
+* Remove track from iPod
 
-    ipod rm [id]
+        $ ipod rm [id]
 
 Warning:
 --------
