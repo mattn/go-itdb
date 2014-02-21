@@ -13,9 +13,12 @@ static inline void freeCstr(char* s) { free(s); }
 import "C"
 import (
 	"errors"
+	"github.com/mikkyang/id3-go"
 	"github.com/mattn/go-gtk/glib"
 	"path/filepath"
 	"runtime"
+	"strconv"
+	"strings"
 	"unsafe"
 )
 
@@ -84,3 +87,68 @@ func (i *IPod) DBPath() (string, error) {
 	}
 	return gostring(ret), nil
 }
+
+func (i *IPod) CopyTrack(fn string) error {
+	f, err := id3.Open(fn)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	ptr := C.CString(fn)
+	defer cfree(ptr)
+	t := C.itdb_track_new()
+	t.userdata = C.gpointer(C.toGstr(ptr))
+	t.userdata_duplicate = C.ItdbUserDataDuplicateFunc(C.g_strdup)
+	t.userdata_destroy = C.ItdbUserDataDestroyFunc(C.g_free)
+
+    t.transferred = 0
+    C.itdb_track_add(i.db, t, -1)
+
+	title := C.CString(f.Title())
+	defer cfree(title)
+    t.title = C.toGstr(title)
+
+	album := C.CString(f.Album())
+	defer cfree(album)
+    t.album = C.toGstr(album)
+
+	artist := C.CString(f.Artist())
+	defer cfree(artist)
+    t.artist = C.toGstr(artist)
+
+	genre := C.CString(f.Genre())
+	defer cfree(genre)
+    t.genre = C.toGstr(genre)
+
+	comment := C.CString(strings.Join(f.Comments(), "\n"))
+	defer cfree(comment)
+    t.comment = C.toGstr(comment)
+
+    t.track_nr = C.gint32(f.Padding())
+
+	year, err := strconv.Atoi(f.Year())
+	if err != nil {
+		return err
+	}
+    t.year = C.gint32(year)
+
+    t.tracklen = C.gint32(f.Size())
+    t.samplerate = 0
+
+	t.itdb = i.db
+
+	var gerror *C.GError
+	C.itdb_cp_track_to_ipod(t, (*C.gchar)(t.userdata), &gerror)
+	if gerror != nil {
+		return glib.ErrorFromNative(unsafe.Pointer(gerror))
+	}
+
+	C.itdb_write(i.db, &gerror)
+	if gerror != nil {
+		return glib.ErrorFromNative(unsafe.Pointer(gerror))
+	}
+
+	return nil
+}
+
