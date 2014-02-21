@@ -34,6 +34,7 @@ func main() {
 	}
 	command.Subcommands = []*commander.Command{
 		make_cmd_ls(iPod),
+		make_cmd_cp(iPod),
 	}
 
 	err = command.Dispatch(os.Args[1:])

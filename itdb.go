@@ -46,16 +46,30 @@ func New(mp string) (*IPod, error) {
 }
 
 type Track struct {
-	Title  string
-	Artist string
+	Title      string
+	Album      string
+	Artist     string
+	Genre      string
+	Comment    string
+	TrackNr    int
+	Year       int
+	TrackLen   int
+	SampleRate int
 }
 
 func (i *IPod) Tracks() (ret []Track, err error) {
 	for e := i.db.tracks; e != nil; e = e.next {
 		t := (*C.Itdb_Track)(e.data)
 		ret = append(ret, Track{
-			Title:  gostring(t.title),
-			Artist: gostring(t.artist),
+			Title:      gostring(t.title),
+			Album:      gostring(t.album),
+			Artist:     gostring(t.artist),
+			Genre:      gostring(t.genre),
+			Comment:    gostring(t.comment),
+			TrackNr:    int(t.track_nr),
+			Year:       int(t.year),
+			TrackLen:   int(t.tracklen),
+			SampleRate: int(t.samplerate),
 		})
 	}
 	return
