@@ -49,7 +49,7 @@ func New(mp string) (*IPod, error) {
 }
 
 type Track struct {
-	Id         int
+	Id         uint
 	Title      string
 	Album      string
 	Artist     string
@@ -65,7 +65,7 @@ func (i *IPod) Tracks() (ret []Track, err error) {
 	for e := i.db.tracks; e != nil; e = e.next {
 		t := (*C.Itdb_Track)(e.data)
 		ret = append(ret, Track{
-			Id:         int(t.id),
+			Id:         uint(t.id),
 			Title:      gostring(t.title),
 			Album:      gostring(t.album),
 			Artist:     gostring(t.artist),
@@ -90,14 +90,21 @@ func (i *IPod) DBPath() (string, error) {
 	return gostring(ret), nil
 }
 
-func (i *IPod) RemoveTrack(id int) error {
-	t := C.itdb_track_by_id(i.db, C.guint32(id))
-	if t != nil {
+func (i *IPod) RemoveTrack(id uint) error {
+	var found *C.Itdb_Track
+	for e := i.db.tracks; e != nil; e = e.next {
+		t := (*C.Itdb_Track)(e.data)
+		if t.id == C.guint32(id) {
+			found = t
+			break
+		}
+	}
+	if found == nil {
 		return errors.New("Unknown track ID")
 	}
 
-	C.itdb_playlist_remove_track(nil, t)
-	C.itdb_track_remove(t)
+	C.itdb_playlist_remove_track(nil, found)
+	C.itdb_track_remove(found)
 	return nil
 }
 

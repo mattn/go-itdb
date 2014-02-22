@@ -13,7 +13,7 @@ func make_cmd_rm(iPod *itdb.IPod) *commander.Command {
 			if err != nil {
 				return err
 			}
-			err = iPod.RemoveTrack(id)
+			err = iPod.RemoveTrack(uint(id))
 			if err != nil {
 				return err
 			}
