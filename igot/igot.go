@@ -18,7 +18,7 @@ func defaultIPodPath() string {
 	if runtime.GOOS == "windows" {
 		return `F:\`
 	}
-	return `/mnt/ipod`
+	return `/media/IPOD`
 }
 
 var p = flag.String("p", defaultIPodPath(), "iPod mount directory")
