@@ -116,7 +116,6 @@ func (i *IPod) CopyTrack(fn string) error {
 	defer f.Close()
 
 	ptr := C.CString(fn)
-	defer cfree(ptr)
 	t := C.itdb_track_new()
 	t.userdata = C.gpointer(C.toGstr(ptr))
 	t.userdata_duplicate = C.ItdbUserDataDuplicateFunc(C.g_strdup)
@@ -126,23 +125,18 @@ func (i *IPod) CopyTrack(fn string) error {
 	C.itdb_track_add(i.db, t, -1)
 
 	title := C.CString(f.Title())
-	defer cfree(title)
 	t.title = C.toGstr(title)
 
 	album := C.CString(f.Album())
-	defer cfree(album)
 	t.album = C.toGstr(album)
 
 	artist := C.CString(f.Artist())
-	defer cfree(artist)
 	t.artist = C.toGstr(artist)
 
 	genre := C.CString(f.Genre())
-	defer cfree(genre)
 	t.genre = C.toGstr(genre)
 
 	comment := C.CString(strings.Join(f.Comments(), "\n"))
-	defer cfree(comment)
 	t.comment = C.toGstr(comment)
 
 	t.track_nr = C.gint32(f.Padding())
